@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import { validateAlert } from '../services';
 import { DexRegistry } from '../services/dexRegistry';
+import { getStrategiesDB } from '../helper';
 
 const router: Router = express.Router();
 
@@ -36,6 +37,13 @@ router.get('/accounts', async (req, res) => {
 
 router.post('/', async (req, res) => {
 	console.log('Recieved Tradingview strategy alert:', req.body);
+
+	// Replace the placeholder with the stored position
+	const [db, rootData] = getStrategiesDB();
+   	const storedPosition = rootData[req.body.strategy]?.position || 0;
+	if (typeof req.body.size === 'string' && req.body.size.includes('{{STORED_POSITION}}')) {
+    	req.body.size = req.body.size.replace('{{STORED_POSITION}}', Math.abs(storedPosition).toString());
+  	}
 
 	const validated = await validateAlert(req.body);
 	if (!validated) {

@@ -45,6 +45,14 @@ router.post('/', async (req, res) => {
     	req.body.size = req.body.size.replace('{{STORED_POSITION}}', Math.abs(storedPosition).toString());
   	}
 
+	// New logic for alerts and "sell" orders
+  	if (req.body.order === 'sell') {
+    		const storedPositionStr = Math.abs(storedPosition).toString();
+    		if (typeof req.body.size === 'string') {req.body.size = storedPositionStr;}
+    		if (typeof req.body.sizeByLeverage === 'string') {req.body.sizeByLeverage = storedPositionStr;}
+    		if (typeof req.body.sizeUSD === 'string') {req.body.sizeUSD = storedPositionStr;}
+  	}
+
 	const validated = await validateAlert(req.body);
 	if (!validated) {
 		res.send('Error. alert message is not valid');

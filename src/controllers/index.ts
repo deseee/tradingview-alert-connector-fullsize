@@ -46,9 +46,9 @@ router.post('/', async (req, res) => {
   	}
 
 	// New logic for alerts and "sell" orders
-  	if (req.body.order === 'sell') {
-    		const storedPositionStr = Math.abs(storedPosition).toString();
-    		if (typeof req.body.size === 'string') {req.body.size = storedPositionStr;}
+	const storedPositionStr = Math.abs(storedPosition).toString();
+  	if (typeof req.body.order === 'string' && req.body.order.includes('sell')) {
+    	 	if (typeof req.body.size === 'string') {req.body.size = storedPositionStr;}
     		if (typeof req.body.sizeByLeverage === 'string') {req.body.sizeByLeverage = storedPositionStr;}
     		if (typeof req.body.sizeUSD === 'string') {req.body.sizeUSD = storedPositionStr;}
   	}

@@ -38,36 +38,27 @@ router.get('/accounts', async (req, res) => {
 router.post('/', async (req, res) => {
 	console.log('Recieved Tradingview strategy alert:', req.body);
 
-	// Replace the placeholder with the stored position
-	//const [db, rootData] = getStrategiesDB();
-   	//const storedPosition = rootData[req.body.strategy]?.position || 0;
-	//if (typeof req.body.size === 'string' && req.body.size.includes('{{STORED_POSITION}}')) {
-    	//req.body.size = req.body.size.replace('{{STORED_POSITION}}', Math.abs(storedPosition).toString());
-  	//}
+	// Replace the size {{STORED_POSITION}} with the storedPosition if sending individual buy/sell alerts
+	if (typeof req.body.size === 'string' && req.body.size.includes('{{STORED_POSITION}}')) {
+		const [db, rootData] = getStrategiesDB();
+   		const storedPosition = rootData[req.body.strategy]?.position || 0;
+		req.body.size = req.body.size.replace('{{STORED_POSITION}}', Math.abs(storedPosition).toString());
+  	}
 
-	// New logic for alerts and "sell" orders
-	//const storedPositionStr = Math.abs(storedPosition).toString();
-  	//if (typeof req.body.order === 'string' && req.body.order.includes('sell')) {
-    	 	//if (typeof req.body.size === 'string') {req.body.size = storedPositionStr;}
-    		//if (typeof req.body.sizeByLeverage === 'string') {req.body.sizeByLeverage = storedPositionStr;}
-    		//if (typeof req.body.sizeUSD === 'string') {req.body.sizeUSD = storedPositionStr;}
-  	//}
-
-	// Add this new code block to handle the size replacement
+	// Sell position size replacement with the storedPosition if using {{strategy.order.action}} in alerts.  Comment out for default behavior.
   	if (req.body.order === 'sell') {
     		const [db, rootData] = getStrategiesDB();
     		const storedPosition = rootData[req.body.strategy]?.position || 0;
    		const absPosition = Math.abs(storedPosition);
 
-   	 // Remove all size-related fields
-   	 delete req.body.size;
-   	 delete req.body.sizeByLeverage;
-    	 delete req.body.sizeUsd;
+   	 	// Remove all size-related fields
+   	 	delete req.body.size;
+   	 	delete req.body.sizeByLeverage;
+    	 	delete req.body.sizeUsd;
 	
-	// Add the stored position as size
-   	 req.body.size = absPosition.toString();
+		// Add the stored position as size
+   	 	req.body.size = absPosition.toString();
  	}
-
 
 	const validated = await validateAlert(req.body);
 	if (!validated) {

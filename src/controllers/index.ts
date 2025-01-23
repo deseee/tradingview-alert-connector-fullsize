@@ -38,14 +38,14 @@ router.get('/accounts', async (req, res) => {
 router.post('/', async (req, res) => {
 	console.log('Recieved Tradingview strategy alert:', req.body);
 
-	// Replace the size {{STORED_POSITION}} with the storedPosition if sending individual buy/sell alerts
+	// Replace the size {{STORED_POSITION}} with the storedPosition in myStrategies.json if sending individual sell/buy alerts  //New Code by deseee
 	if (typeof req.body.size === 'string' && req.body.size.includes('{{STORED_POSITION}}')) {
 		const [db, rootData] = getStrategiesDB();
    		const storedPosition = rootData[req.body.strategy]?.position || 0;
 		req.body.size = req.body.size.replace('{{STORED_POSITION}}', Math.abs(storedPosition).toString());
   	}
 
-	// Sell position size replacement with the storedPosition if using {{strategy.order.action}} in alerts.  Comment out for default behavior.
+	// Replace Sell position size with the storedPosition in myStrategies.json if using {{strategy.order.action}} alerts.  Comment out for default behavior.  //New Code by deseee
   	if (req.body.order === 'sell') {
     		const [db, rootData] = getStrategiesDB();
     		const storedPosition = rootData[req.body.strategy]?.position || 0;
@@ -76,6 +76,17 @@ router.post('/', async (req, res) => {
 		return;
 	}
 
+
+	// When sell alert received set "isFirstOrder": "true" in myStrategies.json to ensure next order is buy //New Code by deseee
+  	if (req.body.order === 'sell') {
+    		const [db, ] = getStrategiesDB();
+    		const rootPath = '/' + req.body.strategy;
+    		const isFirstOrderPath = rootPath + '/isFirstOrder';
+    		db.push(isFirstOrderPath, 'true');
+    		console.log(`Set isFirstOrder to true for strategy ${req.body.strategy} due to sell order`);
+  	}
+
+	
 	// TODO: add check if dex client isReady 
 
 	try {

@@ -76,6 +76,14 @@ router.post('/', async (req, res) => {
 		return;
 	}
 
+	// When sell alert received set "isFirstOrder": "true" in myStrategies.json to ensure next order is buy //New Code by deseee
+  	if (req.body.order === 'sell') {
+		const [db, rootData] = getStrategiesDB();
+		const rootPath = '/' + strategy;
+		const isFirstOrderPath = rootPath + '/isFirstOrder';
+      		db.push(isFirstOrderPath, 'true');
+      		console.log(`Set isFirstOrder to true due to sell order`);
+  	}
 	
 	// TODO: add check if dex client isReady 
 
@@ -87,15 +95,6 @@ router.post('/', async (req, res) => {
 	} catch (e) {
 		res.send('error');
 	}
-
-	// When sell alert received set "isFirstOrder": "true" in myStrategies.json to ensure next order is buy //New Code by deseee
-  	if (req.body.order === 'sell') {
-		const [db, rootData] = getStrategiesDB();
-		const rootPath = '/' + strategy;
-		const isFirstOrderPath = rootPath + '/isFirstOrder';
-      		db.push(isFirstOrderPath, 'true');
-      		console.log(`Set isFirstOrder to true due to sell order`);
-  	}
 
 });
 

@@ -19,7 +19,7 @@ export abstract class AbstractDexClient {
 		const isFirstOrderPath = rootPath + '/isFirstOrder';
 		
 		// Only set isFirstOrderPath false if Buy order  // if wrapper New Code by desee
-		'db.push(isFirstOrderPath, orderResult.side === 'BUY' ? 'false' : 'true');
+		db.push(isFirstOrderPath, orderResult.side === 'BUY' ? 'false' : 'true');
 
 		const orderSize = Number(orderResult.size);
 

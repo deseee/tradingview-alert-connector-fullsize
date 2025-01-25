@@ -79,6 +79,14 @@ router.post('/', async (req, res) => {
 	// TODO: add check if dex client isReady 
 
 	try {
+
+		// Check if delay is specified and is a positive number //New Code by deseee
+    		const delay = Number(req.body.delay);
+    		if (delay > 0 && req.body.order === 'buy') {
+      		console.log(`Waiting for ${delay} seconds before placing order`);
+      		await _sleep(delay * 1000);  // Convert seconds to milliseconds
+    		}
+		
 		const result = await dexClient.placeOrder(req.body);
 
 		res.send('OK');

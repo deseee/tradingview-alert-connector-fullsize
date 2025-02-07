@@ -96,8 +96,8 @@ export class DydxV4Client extends AbstractDexClient {
 		const reduceOnly = false;
 		const triggerPrice = null;
 		let count = 0;
-		const maxTries = 3;
-		const fillWaitTime = 60000; // 1 minute
+		const maxTries = 2; // default = 3
+		const fillWaitTime = 40000; // 1 minute default = 60000
 		while (count <= maxTries) {
 			try {
 				const clientId = this.generateRandomInt32();
@@ -112,7 +112,7 @@ export class DydxV4Client extends AbstractDexClient {
 					size,
 					clientId,
 					timeInForce,
-					120000, // 2 minute
+					20000, // 2 minutes default = 120000
 					execution,
 					postOnly,
 					reduceOnly,
